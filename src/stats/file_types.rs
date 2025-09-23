@@ -2,9 +2,7 @@ use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct FileType {
-    #[allow(dead_code)] // Used for language mapping, accessed via get_display_language in output
     pub language: String,
-    pub extension: String,
     pub is_binary: bool,
     pub comment_patterns: Vec<&'static str>,
 }
@@ -23,7 +21,6 @@ impl FileType {
             // Rust
             "rs" => FileType {
                 language: "Rust".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -31,13 +28,11 @@ impl FileType {
             // JavaScript/TypeScript
             "js" | "jsx" | "mjs" => FileType {
                 language: "JavaScript".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "ts" | "tsx" => FileType {
-                language: "TypeScript".to_string(),
-                extension: extension.clone(),
+                language: "TypeScript".to_string(),                
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -45,7 +40,6 @@ impl FileType {
             // Python
             "py" | "pyx" | "pyi" => FileType {
                 language: "Python".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
@@ -53,13 +47,11 @@ impl FileType {
             // C/C++
             "c" | "h" => FileType {
                 language: "C".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "cpp" | "cxx" | "cc" | "hpp" | "hxx" => FileType {
                 language: "C++".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -67,7 +59,6 @@ impl FileType {
             // Java
             "java" => FileType {
                 language: "Java".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -75,7 +66,6 @@ impl FileType {
             // Go
             "go" => FileType {
                 language: "Go".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -83,7 +73,6 @@ impl FileType {
             // Shell
             "sh" | "bash" | "zsh" | "fish" => FileType {
                 language: "Shell".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
@@ -91,19 +80,16 @@ impl FileType {
             // Web languages
             "html" | "htm" => FileType {
                 language: "HTML".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["<!--"],
             },
             "css" => FileType {
                 language: "CSS".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["/*"],
             },
             "scss" | "sass" => FileType {
                 language: "Sass".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -111,25 +97,21 @@ impl FileType {
             // Config files
             "json" => FileType {
                 language: "JSON".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec![], // JSON doesn't support comments
             },
             "yaml" | "yml" => FileType {
                 language: "YAML".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
             "toml" => FileType {
                 language: "TOML".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
             "xml" => FileType {
                 language: "XML".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["<!--"],
             },
@@ -137,13 +119,11 @@ impl FileType {
             // Markup
             "md" | "markdown" => FileType {
                 language: "Markdown".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["<!--"],
             },
             "rst" => FileType {
                 language: "reStructuredText".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec![".."],
             },
@@ -151,49 +131,41 @@ impl FileType {
             // Other languages
             "rb" => FileType {
                 language: "Ruby".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
             "php" => FileType {
                 language: "PHP".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*", "#"],
             },
             "swift" => FileType {
                 language: "Swift".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "kt" | "kts" => FileType {
                 language: "Kotlin".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "cs" => FileType {
                 language: "C#".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "dart" => FileType {
                 language: "Dart".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
             "r" => FileType {
                 language: "R".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
             "sql" => FileType {
                 language: "SQL".to_string(),
-                extension: extension.clone(),
                 is_binary: false,
                 comment_patterns: vec!["--", "/*"],
             },
@@ -201,37 +173,31 @@ impl FileType {
             // Binary files
             "exe" | "dll" | "so" | "dylib" | "a" | "lib" => FileType {
                 language: "Binary".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
             "jpg" | "jpeg" | "png" | "gif" | "bmp" | "svg" | "ico" | "webp" => FileType {
                 language: "Image".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
             "mp3" | "wav" | "ogg" | "flac" | "aac" => FileType {
                 language: "Audio".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
             "mp4" | "avi" | "mkv" | "mov" | "wmv" | "flv" => FileType {
                 language: "Video".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
             "zip" | "tar" | "gz" | "bz2" | "xz" | "7z" | "rar" => FileType {
                 language: "Archive".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
             "pdf" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" => FileType {
                 language: "Document".to_string(),
-                extension: extension.clone(),
                 is_binary: true,
                 comment_patterns: vec![],
             },
@@ -242,21 +208,11 @@ impl FileType {
                 let is_likely_binary = self::is_likely_binary_extension(&extension);
 
                 FileType {
-                    language: if is_likely_binary { "Binary" } else { "Text" }.to_string(),
-                    extension: if extension.is_empty() {
-                        "no extension".to_string()
-                    } else {
-                        extension
-                    },
-                    is_binary: is_likely_binary,
+                    language: if is_likely_binary { "Binary" } else { "Text" }.to_string(),                    is_binary: is_likely_binary,
                     comment_patterns: vec!["#", "//"], // Default comment patterns
                 }
             }
         }
-    }
-
-    pub fn extension(&self) -> &str {
-        &self.extension
     }
 
     pub fn language(&self) -> &str {

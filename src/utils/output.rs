@@ -84,7 +84,7 @@ impl OutputFormatter {
 
                 println!(
                     "{:<15} {:>8} {:>10} {:>10} {:>12} {:>12}",
-                    self.colorize_language(&language),
+                    self.colorize_language(language),
                     file_stats.count.to_string().bright_white(),
                     format!("{} ({:.1}%)", file_stats.lines, percentage).green(),
                     file_stats.code_lines.to_string().blue(),
@@ -134,9 +134,8 @@ impl OutputFormatter {
 
         for (language, file_stats) in &stats.file_types {
             println!(
-                "{},{},{},{},{},{},{},{}",
+                "{},multiple,{},{},{},{},{},{}",
                 language,
-                "multiple", // Since we're grouping by language, extensions are merged
                 file_stats.count,
                 file_stats.lines,
                 file_stats.code_lines,
