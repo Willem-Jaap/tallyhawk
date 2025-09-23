@@ -27,6 +27,12 @@ pub struct FileTypeStats {
     pub size_bytes: u64,
 }
 
+impl Default for ProjectStats {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProjectStats {
     pub fn new() -> Self {
         Self {
@@ -55,7 +61,7 @@ impl ProjectStats {
         for result in builder.build() {
             let entry = result?;
 
-            if entry.file_type().map_or(false, |ft| ft.is_file()) {
+            if entry.file_type().is_some_and(|ft| ft.is_file()) {
                 self.process_file(entry.path(), config)?;
             }
         }
