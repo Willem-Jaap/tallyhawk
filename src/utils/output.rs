@@ -11,6 +11,7 @@ impl OutputFormatter {
         Self { format }
     }
 
+    /// Display statistics in the specified format (table, JSON, or CSV).
     pub fn display(&self, stats: &ProjectStats) -> Result<(), Box<dyn std::error::Error>> {
         match self.format {
             OutputFormat::Table => self.display_table(stats),
@@ -209,6 +210,7 @@ impl OutputFormatter {
     }
 }
 
+/// Convert bytes to human-readable format (B, KB, MB, GB, TB).
 fn format_bytes(bytes: u64) -> String {
     const UNITS: &[&str] = &["B", "KB", "MB", "GB", "TB"];
     const THRESHOLD: u64 = 1024;

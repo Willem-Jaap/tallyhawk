@@ -46,6 +46,8 @@ impl ProjectStats {
         }
     }
 
+    /// Recursively scan directory and collect file statistics.
+    /// Respects .gitignore files and hidden file preferences.
     pub fn scan_directory(
         &mut self,
         path: &Path,
@@ -69,6 +71,8 @@ impl ProjectStats {
         Ok(())
     }
 
+    /// Process a single file: count lines, detect type, measure size.
+    /// Binary files are tracked but not analyzed for line content.
     fn process_file(
         &mut self,
         path: &Path,
@@ -115,6 +119,7 @@ impl ProjectStats {
         Ok(())
     }
 
+    /// Track binary files (images, executables, etc.) without line analysis.
     fn add_binary_file(&mut self, extension: &str, size: u64) {
         self.total_files += 1;
         self.total_size_bytes += size;
@@ -135,6 +140,7 @@ impl ProjectStats {
         entry.size_bytes += size;
     }
 
+    /// Analyze file content line by line: categorize as code, comments, or blanks.
     fn analyze_lines(
         &self,
         content: &str,

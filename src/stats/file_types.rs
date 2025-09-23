@@ -9,6 +9,8 @@ pub struct FileType {
 }
 
 impl FileType {
+    /// Detect file type and language from file path extension.
+    /// Maps common extensions to languages with their comment patterns.
     pub fn from_path(path: &Path) -> Self {
         let extension = path
             .extension()
@@ -260,6 +262,8 @@ impl FileType {
         self.is_binary
     }
 
+    /// Check if a line is a comment based on language-specific patterns.
+    /// Supports single-line comments like //, #, --, etc.
     pub fn is_comment_line(&self, line: &str) -> bool {
         let trimmed = line.trim();
 
