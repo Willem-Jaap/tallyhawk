@@ -259,6 +259,10 @@ impl FileType {
         &self.extension
     }
 
+    pub fn language(&self) -> &str {
+        &self.language
+    }
+
     pub fn is_binary(&self) -> bool {
         self.is_binary
     }

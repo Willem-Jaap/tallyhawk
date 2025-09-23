@@ -82,15 +82,25 @@ impl ProjectStats {
         let file_size = metadata.len();
 
         let file_type = FileType::from_path(path);
-        let extension = file_type.extension();
 
         // Skip binary files for line counting
         if file_type.is_binary() {
-            self.add_binary_file(&extension, file_size);
+            self.add_binary_file(&file_type, file_size);
             return Ok(());
         }
 
-        let content = fs::read_to_string(path)?;
+        let content = match fs::read_to_string(path) {
+            Ok(content) => content,
+            Err(e) => {
+                // If we can't read as UTF-8, treat as binary
+                if e.kind() == std::io::ErrorKind::InvalidData {
+                    self.add_binary_file(&file_type, file_size);
+                    return Ok(());
+                }
+                // Re-throw other IO errors
+                return Err(e.into());
+            }
+        };
         let line_stats = self.analyze_lines(&content, &file_type, config);
 
         self.total_files += 1;
@@ -100,14 +110,18 @@ impl ProjectStats {
         self.total_blank_lines += line_stats.blank;
         self.total_size_bytes += file_size;
 
-        let entry = self.file_types.entry(extension.to_string()).or_insert(FileTypeStats {
-            count: 0,
-            lines: 0,
-            code_lines: 0,
-            comment_lines: 0,
-            blank_lines: 0,
-            size_bytes: 0,
-        });
+        let language_key = file_type.language().to_string();
+        let entry = self
+            .file_types
+            .entry(language_key)
+            .or_insert(FileTypeStats {
+                count: 0,
+                lines: 0,
+                code_lines: 0,
+                comment_lines: 0,
+                blank_lines: 0,
+                size_bytes: 0,
+            });
 
         entry.count += 1;
         entry.lines += line_stats.total;
@@ -120,13 +134,14 @@ impl ProjectStats {
     }
 
     /// Track binary files (images, executables, etc.) without line analysis.
-    fn add_binary_file(&mut self, extension: &str, size: u64) {
+    fn add_binary_file(&mut self, file_type: &FileType, size: u64) {
         self.total_files += 1;
         self.total_size_bytes += size;
 
+        let language_key = file_type.language().to_string();
         let entry = self
             .file_types
-            .entry(extension.to_string())
+            .entry(language_key)
             .or_insert(FileTypeStats {
                 count: 0,
                 lines: 0,

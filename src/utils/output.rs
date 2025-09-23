@@ -75,8 +75,7 @@ impl OutputFormatter {
             let mut sorted_types: Vec<_> = stats.file_types.iter().collect();
             sorted_types.sort_by(|a, b| b.1.lines.cmp(&a.1.lines));
 
-            for (extension, file_stats) in sorted_types {
-                let language = self.get_display_language(extension);
+            for (language, file_stats) in sorted_types {
                 let percentage = if stats.total_lines > 0 {
                     (file_stats.lines as f64 / stats.total_lines as f64) * 100.0
                 } else {
@@ -100,7 +99,7 @@ impl OutputFormatter {
             let mut top_types: Vec<_> = stats.file_types.iter().collect();
             top_types.sort_by(|a, b| b.1.lines.cmp(&a.1.lines));
 
-            for (i, (extension, file_stats)) in top_types.iter().take(5).enumerate() {
+            for (i, (language, file_stats)) in top_types.iter().take(5).enumerate() {
                 let medal = match i {
                     0 => "🥇",
                     1 => "🥈",
@@ -111,7 +110,7 @@ impl OutputFormatter {
                 println!(
                     "{} {} - {} lines ({:.1}%)",
                     medal,
-                    self.get_display_language(extension).bold(),
+                    language.bold(),
                     file_stats.lines.to_string().green().bold(),
                     percentage
                 );
@@ -133,11 +132,11 @@ impl OutputFormatter {
     fn display_csv(&self, stats: &ProjectStats) -> Result<(), Box<dyn std::error::Error>> {
         println!("language,extension,files,lines,code_lines,comment_lines,blank_lines,size_bytes");
 
-        for (extension, file_stats) in &stats.file_types {
+        for (language, file_stats) in &stats.file_types {
             println!(
                 "{},{},{},{},{},{},{},{}",
-                self.get_display_language(extension),
-                extension,
+                language,
+                "multiple", // Since we're grouping by language, extensions are merged
                 file_stats.count,
                 file_stats.lines,
                 file_stats.code_lines,
@@ -158,35 +157,6 @@ impl OutputFormatter {
         );
 
         Ok(())
-    }
-
-    fn get_display_language(&self, extension: &str) -> String {
-        match extension {
-            "rs" => "Rust".to_string(),
-            "js" | "jsx" | "mjs" => "JavaScript".to_string(),
-            "ts" | "tsx" => "TypeScript".to_string(),
-            "py" | "pyx" | "pyi" => "Python".to_string(),
-            "c" | "h" => "C".to_string(),
-            "cpp" | "cxx" | "cc" | "hpp" | "hxx" => "C++".to_string(),
-            "java" => "Java".to_string(),
-            "go" => "Go".to_string(),
-            "rb" => "Ruby".to_string(),
-            "php" => "PHP".to_string(),
-            "swift" => "Swift".to_string(),
-            "kt" | "kts" => "Kotlin".to_string(),
-            "cs" => "C#".to_string(),
-            "html" | "htm" => "HTML".to_string(),
-            "css" => "CSS".to_string(),
-            "scss" | "sass" => "Sass".to_string(),
-            "md" | "markdown" => "Markdown".to_string(),
-            "json" => "JSON".to_string(),
-            "yaml" | "yml" => "YAML".to_string(),
-            "toml" => "TOML".to_string(),
-            "xml" => "XML".to_string(),
-            "sh" | "bash" | "zsh" | "fish" => "Shell".to_string(),
-            "no extension" => "No Extension".to_string(),
-            _ => extension.to_uppercase(),
-        }
     }
 
     fn colorize_language(&self, language: &str) -> ColoredString {
