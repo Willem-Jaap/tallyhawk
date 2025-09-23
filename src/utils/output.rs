@@ -22,19 +22,43 @@ impl OutputFormatter {
     fn display_table(&self, stats: &ProjectStats) -> Result<(), Box<dyn std::error::Error>> {
         println!("\n{}", "🦅 Tallyhawk survey results".bold().cyan());
         println!("{}", "═".repeat(50).bright_cyan());
-        
+
         println!("\n{}", "📊 Project overview".bold().yellow());
-        println!("{}  {}", "Total Files:".bright_white(), stats.total_files.to_string().green().bold());
-        println!("{}  {}", "Total Lines:".bright_white(), stats.total_lines.to_string().green().bold());
-        println!("{}  {}", "Code Lines:".bright_white(), stats.total_code_lines.to_string().blue().bold());
-        println!("{}  {}", "Comment Lines:".bright_white(), stats.total_comment_lines.to_string().yellow().bold());
-        println!("{}  {}", "Blank Lines:".bright_white(), stats.total_blank_lines.to_string().bright_black().bold());
-        println!("{}  {}", "Total Size:".bright_white(), format_bytes(stats.total_size_bytes).magenta().bold());
+        println!(
+            "{}  {}",
+            "Total Files:".bright_white(),
+            stats.total_files.to_string().green().bold()
+        );
+        println!(
+            "{}  {}",
+            "Total Lines:".bright_white(),
+            stats.total_lines.to_string().green().bold()
+        );
+        println!(
+            "{}  {}",
+            "Code Lines:".bright_white(),
+            stats.total_code_lines.to_string().blue().bold()
+        );
+        println!(
+            "{}  {}",
+            "Comment Lines:".bright_white(),
+            stats.total_comment_lines.to_string().yellow().bold()
+        );
+        println!(
+            "{}  {}",
+            "Blank Lines:".bright_white(),
+            stats.total_blank_lines.to_string().bright_black().bold()
+        );
+        println!(
+            "{}  {}",
+            "Total Size:".bright_white(),
+            format_bytes(stats.total_size_bytes).magenta().bold()
+        );
 
         if !stats.file_types.is_empty() {
             println!("\n{}", "📁 File Types Breakdown".bold().yellow());
             println!("{}", "─".repeat(80).bright_yellow());
-            
+
             println!(
                 "{:<15} {:>8} {:>10} {:>10} {:>12} {:>12}",
                 "Language".bold().bright_white(),
@@ -74,11 +98,11 @@ impl OutputFormatter {
             println!("\n{}", "🏆 Top Languages by Lines".bold().yellow());
             let mut top_types: Vec<_> = stats.file_types.iter().collect();
             top_types.sort_by(|a, b| b.1.lines.cmp(&a.1.lines));
-            
+
             for (i, (extension, file_stats)) in top_types.iter().take(5).enumerate() {
                 let medal = match i {
                     0 => "🥇",
-                    1 => "🥈", 
+                    1 => "🥈",
                     2 => "🥉",
                     _ => "  ",
                 };
@@ -95,7 +119,7 @@ impl OutputFormatter {
 
         println!("\n{}", "─".repeat(50).bright_cyan());
         println!("{}", "Survey complete! 🦅✨".bright_cyan().bold());
-        
+
         Ok(())
     }
 
@@ -107,7 +131,7 @@ impl OutputFormatter {
 
     fn display_csv(&self, stats: &ProjectStats) -> Result<(), Box<dyn std::error::Error>> {
         println!("language,extension,files,lines,code_lines,comment_lines,blank_lines,size_bytes");
-        
+
         for (extension, file_stats) in &stats.file_types {
             println!(
                 "{},{},{},{},{},{},{},{}",
@@ -121,7 +145,7 @@ impl OutputFormatter {
                 file_stats.size_bytes
             );
         }
-        
+
         println!(
             "TOTAL,ALL,{},{},{},{},{},{}",
             stats.total_files,
@@ -131,7 +155,7 @@ impl OutputFormatter {
             stats.total_blank_lines,
             stats.total_size_bytes
         );
-        
+
         Ok(())
     }
 

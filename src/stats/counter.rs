@@ -40,9 +40,13 @@ impl ProjectStats {
         }
     }
 
-    pub fn scan_directory(&mut self, path: &Path, config: &CountConfig) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn scan_directory(
+        &mut self,
+        path: &Path,
+        config: &CountConfig,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let mut builder = WalkBuilder::new(path);
-        
+
         builder
             .hidden(!config.include_hidden)
             .git_ignore(config.respect_gitignore)
@@ -50,7 +54,7 @@ impl ProjectStats {
 
         for result in builder.build() {
             let entry = result?;
-            
+
             if entry.file_type().map_or(false, |ft| ft.is_file()) {
                 self.process_file(entry.path(), config)?;
             }
@@ -59,10 +63,14 @@ impl ProjectStats {
         Ok(())
     }
 
-    fn process_file(&mut self, path: &Path, config: &CountConfig) -> Result<(), Box<dyn std::error::Error>> {
+    fn process_file(
+        &mut self,
+        path: &Path,
+        config: &CountConfig,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let metadata = fs::metadata(path)?;
         let file_size = metadata.len();
-        
+
         let file_type = FileType::from_path(path);
         let extension = file_type.extension();
 
@@ -105,20 +113,28 @@ impl ProjectStats {
         self.total_files += 1;
         self.total_size_bytes += size;
 
-        let entry = self.file_types.entry(extension.to_string()).or_insert(FileTypeStats {
-            count: 0,
-            lines: 0,
-            code_lines: 0,
-            comment_lines: 0,
-            blank_lines: 0,
-            size_bytes: 0,
-        });
+        let entry = self
+            .file_types
+            .entry(extension.to_string())
+            .or_insert(FileTypeStats {
+                count: 0,
+                lines: 0,
+                code_lines: 0,
+                comment_lines: 0,
+                blank_lines: 0,
+                size_bytes: 0,
+            });
 
         entry.count += 1;
         entry.size_bytes += size;
     }
 
-    fn analyze_lines(&self, content: &str, file_type: &FileType, config: &CountConfig) -> LineStats {
+    fn analyze_lines(
+        &self,
+        content: &str,
+        file_type: &FileType,
+        config: &CountConfig,
+    ) -> LineStats {
         let lines: Vec<&str> = content.lines().collect();
         let mut stats = LineStats {
             total: lines.len(),
@@ -129,7 +145,7 @@ impl ProjectStats {
 
         for line in lines {
             let trimmed = line.trim();
-            
+
             if trimmed.is_empty() {
                 stats.blank += 1;
             } else if file_type.is_comment_line(trimmed) {

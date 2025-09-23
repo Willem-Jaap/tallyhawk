@@ -24,23 +24,23 @@ enum Commands {
         /// Path to analyze (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
-        
+
         /// Include hidden files and directories
         #[arg(short, long)]
         all: bool,
-        
+
         /// Output format
         #[arg(short, long, value_enum, default_value = "table")]
         format: OutputFormat,
-        
+
         /// Respect .gitignore files
         #[arg(long, default_value = "true")]
         gitignore: bool,
-        
+
         /// Include blank lines in count
         #[arg(long)]
         include_blanks: bool,
-        
+
         /// Include comments in count
         #[arg(long)]
         include_comments: bool,
@@ -67,7 +67,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 include_blank_lines: include_blanks,
                 include_comments,
             };
-            
+
             commands::count::run(config)?;
         }
     }

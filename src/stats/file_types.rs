@@ -24,7 +24,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // JavaScript/TypeScript
             "js" | "jsx" | "mjs" => FileType {
                 language: "JavaScript".to_string(),
@@ -38,7 +38,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // Python
             "py" | "pyx" | "pyi" => FileType {
                 language: "Python".to_string(),
@@ -46,7 +46,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
-            
+
             // C/C++
             "c" | "h" => FileType {
                 language: "C".to_string(),
@@ -60,7 +60,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // Java
             "java" => FileType {
                 language: "Java".to_string(),
@@ -68,7 +68,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // Go
             "go" => FileType {
                 language: "Go".to_string(),
@@ -76,7 +76,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // Shell
             "sh" | "bash" | "zsh" | "fish" => FileType {
                 language: "Shell".to_string(),
@@ -84,7 +84,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["#"],
             },
-            
+
             // Web languages
             "html" | "htm" => FileType {
                 language: "HTML".to_string(),
@@ -104,7 +104,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
-            
+
             // Config files
             "json" => FileType {
                 language: "JSON".to_string(),
@@ -130,7 +130,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["<!--"],
             },
-            
+
             // Markup
             "md" | "markdown" => FileType {
                 language: "Markdown".to_string(),
@@ -144,7 +144,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec![".."],
             },
-            
+
             // Other languages
             "rb" => FileType {
                 language: "Ruby".to_string(),
@@ -194,7 +194,7 @@ impl FileType {
                 is_binary: false,
                 comment_patterns: vec!["--", "/*"],
             },
-            
+
             // Binary files
             "exe" | "dll" | "so" | "dylib" | "a" | "lib" => FileType {
                 language: "Binary".to_string(),
@@ -232,15 +232,19 @@ impl FileType {
                 is_binary: true,
                 comment_patterns: vec![],
             },
-            
+
             // Default for unknown files
             _ => {
                 // Try to guess if it's binary by checking for common text file patterns
                 let is_likely_binary = self::is_likely_binary_extension(&extension);
-                
+
                 FileType {
                     language: if is_likely_binary { "Binary" } else { "Text" }.to_string(),
-                    extension: if extension.is_empty() { "no extension".to_string() } else { extension },
+                    extension: if extension.is_empty() {
+                        "no extension".to_string()
+                    } else {
+                        extension
+                    },
                     is_binary: is_likely_binary,
                     comment_patterns: vec!["#", "//"], // Default comment patterns
                 }
@@ -258,21 +262,84 @@ impl FileType {
 
     pub fn is_comment_line(&self, line: &str) -> bool {
         let trimmed = line.trim();
-        
+
         for pattern in &self.comment_patterns {
             if trimmed.starts_with(pattern) {
                 return true;
             }
         }
-        
+
         false
     }
 }
 
 fn is_likely_binary_extension(ext: &str) -> bool {
-    matches!(ext, 
-        "bin" | "dat" | "db" | "sqlite" | "sqlite3" |
-        "lock" | "log" | "tmp" | "temp" | "cache" |
-        "o" | "obj" | "pyc" | "class" | "jar"
+    matches!(
+        ext,
+        "bin"
+            | "dat"
+            | "db"
+            | "sqlite"
+            | "sqlite3"
+            | "lock"
+            | "log"
+            | "tmp"
+            | "temp"
+            | "cache"
+            | "o"
+            | "obj"
+            | "pyc"
+            | "class"
+            | "jar"
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    #[test]
+    fn test_rust_file_detection() {
+        let path = Path::new("test.rs");
+        let file_type = FileType::from_path(path);
+        assert_eq!(file_type.language, "Rust");
+        assert_eq!(file_type.extension, "rs");
+        assert!(!file_type.is_binary);
+        assert!(file_type.comment_patterns.contains(&"//"));
+    }
+
+    #[test]
+    fn test_python_file_detection() {
+        let path = Path::new("script.py");
+        let file_type = FileType::from_path(path);
+        assert_eq!(file_type.language, "Python");
+        assert_eq!(file_type.extension, "py");
+        assert!(!file_type.is_binary);
+        assert!(file_type.comment_patterns.contains(&"#"));
+    }
+
+    #[test]
+    fn test_binary_file_detection() {
+        let path = Path::new("program.exe");
+        let file_type = FileType::from_path(path);
+        assert_eq!(file_type.language, "Binary");
+        assert_eq!(file_type.extension, "exe");
+        assert!(file_type.is_binary);
+    }
+
+    #[test]
+    fn test_no_extension() {
+        let path = Path::new("README");
+        let file_type = FileType::from_path(path);
+        assert_eq!(file_type.extension, "no extension");
+    }
+
+    #[test]
+    fn test_is_likely_binary_extension() {
+        assert!(is_likely_binary_extension("bin"));
+        assert!(is_likely_binary_extension("pyc"));
+        assert!(!is_likely_binary_extension("txt"));
+        assert!(!is_likely_binary_extension("rs"));
+    }
 }

@@ -1,6 +1,6 @@
 use crate::stats::counter::ProjectStats;
-use crate::utils::output::OutputFormatter;
 use crate::types::OutputFormat;
+use crate::utils::output::OutputFormatter;
 use std::path::PathBuf;
 
 pub struct CountConfig {
@@ -14,12 +14,12 @@ pub struct CountConfig {
 
 pub fn run(config: CountConfig) -> Result<(), Box<dyn std::error::Error>> {
     println!("🦅 Tallyhawk surveying: {}", config.path.display());
-    
+
     let mut stats = ProjectStats::new();
     stats.scan_directory(&config.path, &config)?;
-    
+
     let formatter = OutputFormatter::new(config.output_format);
     formatter.display(&stats)?;
-    
+
     Ok(())
 }
