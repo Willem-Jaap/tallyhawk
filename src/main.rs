@@ -2,7 +2,6 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
 mod commands;
-mod error;
 mod stats;
 mod types;
 mod utils;

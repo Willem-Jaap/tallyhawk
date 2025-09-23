@@ -1,4 +1,4 @@
-//! # Tallyhawk
+//! # TallyHawk
 //!
 //! A sharp-eyed CLI tool for gathering project statistics.
 //!
@@ -7,12 +7,10 @@
 //! in various output formats.
 
 pub mod commands;
-pub mod error;
 pub mod stats;
 pub mod types;
 pub mod utils;
 
-pub use error::{Result, TallyhawkError};
 pub use types::OutputFormat;
 
 pub use commands::count::{run as count, CountConfig};

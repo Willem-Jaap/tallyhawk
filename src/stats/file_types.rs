@@ -2,6 +2,7 @@ use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct FileType {
+    #[allow(dead_code)] // Used for language mapping, accessed via get_display_language in output
     pub language: String,
     pub extension: String,
     pub is_binary: bool,
@@ -254,8 +255,8 @@ impl FileType {
         }
     }
 
-    pub fn extension(&self) -> String {
-        self.extension.clone()
+    pub fn extension(&self) -> &str {
+        &self.extension
     }
 
     pub fn is_binary(&self) -> bool {

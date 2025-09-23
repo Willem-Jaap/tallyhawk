@@ -100,7 +100,7 @@ impl ProjectStats {
         self.total_blank_lines += line_stats.blank;
         self.total_size_bytes += file_size;
 
-        let entry = self.file_types.entry(extension).or_insert(FileTypeStats {
+        let entry = self.file_types.entry(extension.to_string()).or_insert(FileTypeStats {
             count: 0,
             lines: 0,
             code_lines: 0,
