@@ -1,7 +1,7 @@
 [package]
 name = "tallyhawk"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 authors = ["Willem-Jaap <your.email@example.com>"]
 description = "A sharp-eyed CLI tool for gathering project statistics"
 license = "MIT"
