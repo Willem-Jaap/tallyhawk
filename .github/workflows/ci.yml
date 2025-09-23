@@ -1,0 +1,58 @@
+name: CI
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+env:
+    CARGO_TERM_COLOR: always
+
+jobs:
+    test:
+        name: Test
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                rust:
+                    - stable
+                    - beta
+                    - nightly
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@master
+              with:
+                  toolchain: ${{ matrix.rust }}
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      target
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            - name: Run tests
+              run: cargo test --verbose
+
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  components: rustfmt, clippy
+            - name: Format
+              run: cargo fmt --all -- --check
+            - name: Clippy
+              run: cargo clippy -- -D warnings
+
+    security:
+        name: Security audit
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: rustsec/audit-check@v1.4.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
