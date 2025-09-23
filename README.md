@@ -30,12 +30,12 @@ tallyhawk count --include-comments --include-blanks
 
 ## Features
 
-- 📊 Comprehensive project statistics
-- 🎨 Beautiful colored terminal output
-- 📁 Support for multiple file types and languages
-- 🔍 Respects `.gitignore` files
-- 📤 Multiple output formats (table, JSON, CSV)
-- ⚡ Fast scanning with parallel processing
+-   📊 Comprehensive project statistics
+-   🎨 Beautiful colored terminal output
+-   📁 Support for multiple file types and languages
+-   🔍 Respects `.gitignore` files
+-   📤 Multiple output formats (table, JSON, CSV)
+-   ⚡ Fast scanning with parallel processing
 
 ## Development
 
