@@ -1,5 +1,5 @@
 use crate::stats::counter::ProjectStats;
-use crate::OutputFormat;
+use crate::types::OutputFormat;
 use colored::*;
 
 pub struct OutputFormatter {

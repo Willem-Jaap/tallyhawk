@@ -2,8 +2,12 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
 mod commands;
+mod error;
 mod stats;
+mod types;
 mod utils;
+
+use types::OutputFormat;
 
 #[derive(Parser)]
 #[command(name = "tallyhawk")]
@@ -41,13 +45,6 @@ enum Commands {
         #[arg(long)]
         include_comments: bool,
     },
-}
-
-#[derive(clap::ValueEnum, Clone)]
-pub enum OutputFormat {
-    Table,
-    Json,
-    Csv,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

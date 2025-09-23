@@ -1,6 +1,6 @@
 use crate::stats::counter::ProjectStats;
 use crate::utils::output::OutputFormatter;
-use crate::OutputFormat;
+use crate::types::OutputFormat;
 use std::path::PathBuf;
 
 pub struct CountConfig {
