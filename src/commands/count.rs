@@ -26,10 +26,7 @@ pub fn run(config: CountConfig) -> Result<(), Box<dyn std::error::Error>> {
     let formatter = OutputFormatter::new(config.output_format);
     formatter.display(&stats)?;
 
-    println!(
-        "\n⚡ Analysis completed in {}ms",
-        duration.as_millis()
-    );
+    println!("\n⚡ Analysis completed in {}ms", duration.as_millis());
 
     Ok(())
 }

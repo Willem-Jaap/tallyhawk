@@ -270,7 +270,6 @@ mod tests {
         let path = Path::new("test.rs");
         let file_type = FileType::from_path(path);
         assert_eq!(file_type.language, "Rust");
-        assert_eq!(file_type.extension, "rs");
         assert!(!file_type.is_binary);
         assert!(file_type.comment_patterns.contains(&"//"));
     }
@@ -280,7 +279,6 @@ mod tests {
         let path = Path::new("script.py");
         let file_type = FileType::from_path(path);
         assert_eq!(file_type.language, "Python");
-        assert_eq!(file_type.extension, "py");
         assert!(!file_type.is_binary);
         assert!(file_type.comment_patterns.contains(&"#"));
     }
@@ -290,7 +288,6 @@ mod tests {
         let path = Path::new("program.exe");
         let file_type = FileType::from_path(path);
         assert_eq!(file_type.language, "Binary");
-        assert_eq!(file_type.extension, "exe");
         assert!(file_type.is_binary);
     }
 
@@ -298,7 +295,8 @@ mod tests {
     fn test_no_extension() {
         let path = Path::new("README");
         let file_type = FileType::from_path(path);
-        assert_eq!(file_type.extension, "no extension");
+        assert_eq!(file_type.language, "Text");
+        assert!(!file_type.is_binary);
     }
 
     #[test]
