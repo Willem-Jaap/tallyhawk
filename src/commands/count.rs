@@ -2,6 +2,7 @@ use crate::stats::counter::ProjectStats;
 use crate::types::OutputFormat;
 use crate::utils::output::OutputFormatter;
 use std::path::PathBuf;
+use std::time::Instant;
 
 pub struct CountConfig {
     pub path: PathBuf,
@@ -15,11 +16,20 @@ pub struct CountConfig {
 pub fn run(config: CountConfig) -> Result<(), Box<dyn std::error::Error>> {
     println!("🦅 Tallyhawk surveying: {}", config.path.display());
 
+    let start_time = Instant::now();
+
     let mut stats = ProjectStats::new();
     stats.scan_directory(&config.path, &config)?;
 
+    let duration = start_time.elapsed();
+
     let formatter = OutputFormatter::new(config.output_format);
     formatter.display(&stats)?;
+
+    println!(
+        "\n⚡ Analysis completed in {}ms",
+        duration.as_millis()
+    );
 
     Ok(())
 }

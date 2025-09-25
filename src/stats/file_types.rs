@@ -32,7 +32,7 @@ impl FileType {
                 comment_patterns: vec!["//", "/*"],
             },
             "ts" | "tsx" => FileType {
-                language: "TypeScript".to_string(),                
+                language: "TypeScript".to_string(),
                 is_binary: false,
                 comment_patterns: vec!["//", "/*"],
             },
@@ -208,7 +208,8 @@ impl FileType {
                 let is_likely_binary = self::is_likely_binary_extension(&extension);
 
                 FileType {
-                    language: if is_likely_binary { "Binary" } else { "Text" }.to_string(),                    is_binary: is_likely_binary,
+                    language: if is_likely_binary { "Binary" } else { "Text" }.to_string(),
+                    is_binary: is_likely_binary,
                     comment_patterns: vec!["#", "//"], // Default comment patterns
                 }
             }
