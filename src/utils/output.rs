@@ -1,6 +1,7 @@
 use crate::stats::counter::ProjectStats;
 use crate::types::OutputFormat;
 use colored::*;
+use num_format::{Locale, ToFormattedString};
 
 pub struct OutputFormatter {
     format: OutputFormat,
@@ -28,27 +29,27 @@ impl OutputFormatter {
         println!(
             "{:<15} {}",
             "Total Files:".bright_white(),
-            stats.total_files.to_string().green().bold()
+            stats.total_files.to_formatted_string(&Locale::en).green().bold()
         );
         println!(
             "{:<15} {}",
             "Total Lines:".bright_white(),
-            stats.total_lines.to_string().green().bold()
+            stats.total_lines.to_formatted_string(&Locale::en).green().bold()
         );
         println!(
             "{:<15} {}",
             "Code Lines:".bright_white(),
-            stats.total_code_lines.to_string().blue().bold()
+            stats.total_code_lines.to_formatted_string(&Locale::en).blue().bold()
         );
         println!(
             "{:<15} {}",
             "Comment Lines:".bright_white(),
-            stats.total_comment_lines.to_string().yellow().bold()
+            stats.total_comment_lines.to_formatted_string(&Locale::en).yellow().bold()
         );
         println!(
             "{:<15} {}",
             "Blank Lines:".bright_white(),
-            stats.total_blank_lines.to_string().bright_black().bold()
+            stats.total_blank_lines.to_formatted_string(&Locale::en).bright_black().bold()
         );
         println!(
             "{:<15} {}",
@@ -84,11 +85,11 @@ impl OutputFormatter {
                 };
 
                 let language_column = format!("{:<15}", language);
-                let files_column = format!("{:>6}", file_stats.count);
-                let lines_column = format!("{:>15}", file_stats.lines);
+                let files_column = format!("{:>6}", file_stats.count.to_formatted_string(&Locale::en));
+                let lines_column = format!("{:>15}", file_stats.lines.to_formatted_string(&Locale::en));
                 let percent_column = format!("{:>9.1}%", percentage);
-                let code_column = format!("{:>10}", file_stats.code_lines);
-                let comments_column = format!("{:>10}", file_stats.comment_lines);
+                let code_column = format!("{:>10}", file_stats.code_lines.to_formatted_string(&Locale::en));
+                let comments_column = format!("{:>10}", file_stats.comment_lines.to_formatted_string(&Locale::en));
                 let size_column = format!("{:>12}", format_bytes(file_stats.size_bytes));
 
                 println!(
@@ -121,7 +122,7 @@ impl OutputFormatter {
                     "{} {:<12} {:>8} lines ({:>5.1}%)",
                     medal,
                     language.bold(),
-                    file_stats.lines.to_string().green().bold(),
+                    file_stats.lines.to_formatted_string(&Locale::en).green().bold(),
                     percentage
                 );
             }
@@ -207,7 +208,7 @@ fn format_bytes(bytes: u64) -> String {
     }
 
     if unit_index == 0 {
-        format!("{} {}", bytes, UNITS[unit_index])
+        format!("{} {}", (bytes as usize).to_formatted_string(&Locale::en), UNITS[unit_index])
     } else {
         format!("{:.1} {}", size, UNITS[unit_index])
     }
