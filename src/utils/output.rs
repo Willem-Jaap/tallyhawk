@@ -1,6 +1,7 @@
 use crate::stats::counter::ProjectStats;
 use crate::types::OutputFormat;
 use colored::*;
+use num_format::{Locale, ToFormattedString};
 
 pub struct OutputFormatter {
     format: OutputFormat,
@@ -26,50 +27,51 @@ impl OutputFormatter {
 
         println!("\n{}", "📊 Project overview".bold().yellow());
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Total Files:".bright_white(),
-            stats.total_files.to_string().green().bold()
+            stats.total_files.to_formatted_string(&Locale::en).green().bold()
         );
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Total Lines:".bright_white(),
-            stats.total_lines.to_string().green().bold()
+            stats.total_lines.to_formatted_string(&Locale::en).green().bold()
         );
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Code Lines:".bright_white(),
-            stats.total_code_lines.to_string().blue().bold()
+            stats.total_code_lines.to_formatted_string(&Locale::en).blue().bold()
         );
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Comment Lines:".bright_white(),
-            stats.total_comment_lines.to_string().yellow().bold()
+            stats.total_comment_lines.to_formatted_string(&Locale::en).yellow().bold()
         );
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Blank Lines:".bright_white(),
-            stats.total_blank_lines.to_string().bright_black().bold()
+            stats.total_blank_lines.to_formatted_string(&Locale::en).bright_black().bold()
         );
         println!(
-            "{}  {}",
+            "{:<15} {}",
             "Total Size:".bright_white(),
             format_bytes(stats.total_size_bytes).magenta().bold()
         );
 
         if !stats.file_types.is_empty() {
             println!("\n{}", "📁 File Types Breakdown".bold().yellow());
-            println!("{}", "─".repeat(80).bright_yellow());
+            println!("{}", "─".repeat(95).bright_yellow());
 
             println!(
-                "{:<15} {:>8} {:>10} {:>10} {:>12} {:>12}",
+                "{:<15} {:>6} {:>15} {:>10} {:>10} {:>10} {:>12}",
                 "Language".bold().bright_white(),
                 "Files".bold().bright_white(),
                 "Lines".bold().bright_white(),
+                "Percent".bold().bright_white(),
                 "Code".bold().bright_white(),
                 "Comments".bold().bright_white(),
                 "Size".bold().bright_white()
             );
-            println!("{}", "─".repeat(80).bright_black());
+            println!("{}", "─".repeat(95).bright_black());
 
             // Sort by line count (descending)
             let mut sorted_types: Vec<_> = stats.file_types.iter().collect();
@@ -82,14 +84,23 @@ impl OutputFormatter {
                     0.0
                 };
 
+                let language_column = format!("{:<15}", language);
+                let files_column = format!("{:>6}", file_stats.count.to_formatted_string(&Locale::en));
+                let lines_column = format!("{:>15}", file_stats.lines.to_formatted_string(&Locale::en));
+                let percent_column = format!("{:>9.1}%", percentage);
+                let code_column = format!("{:>10}", file_stats.code_lines.to_formatted_string(&Locale::en));
+                let comments_column = format!("{:>10}", file_stats.comment_lines.to_formatted_string(&Locale::en));
+                let size_column = format!("{:>12}", format_bytes(file_stats.size_bytes));
+
                 println!(
-                    "{:<15} {:>8} {:>10} {:>10} {:>12} {:>12}",
-                    self.colorize_language(language),
-                    file_stats.count.to_string().bright_white(),
-                    format!("{} ({:.1}%)", file_stats.lines, percentage).green(),
-                    file_stats.code_lines.to_string().blue(),
-                    file_stats.comment_lines.to_string().yellow(),
-                    format_bytes(file_stats.size_bytes).magenta()
+                    "{} {} {} {} {} {} {}",
+                    self.colorize_language(&language_column),
+                    files_column.bright_white(),
+                    lines_column.green(),
+                    percent_column.bright_green(),
+                    code_column.blue(),
+                    comments_column.yellow(),
+                    size_column.magenta()
                 );
             }
         }
@@ -108,10 +119,10 @@ impl OutputFormatter {
                 };
                 let percentage = (file_stats.lines as f64 / stats.total_lines as f64) * 100.0;
                 println!(
-                    "{} {} - {} lines ({:.1}%)",
+                    "{} {:<12} {:>8} lines ({:>5.1}%)",
                     medal,
                     language.bold(),
-                    file_stats.lines.to_string().green().bold(),
+                    file_stats.lines.to_formatted_string(&Locale::en).green().bold(),
                     percentage
                 );
             }
@@ -197,7 +208,7 @@ fn format_bytes(bytes: u64) -> String {
     }
 
     if unit_index == 0 {
-        format!("{} {}", bytes, UNITS[unit_index])
+        format!("{} {}", (bytes as usize).to_formatted_string(&Locale::en), UNITS[unit_index])
     } else {
         format!("{:.1} {}", size, UNITS[unit_index])
     }
